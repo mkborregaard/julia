@@ -727,8 +727,8 @@ State LateLowerGCFrame::LocalScan(Function &F) {
         for (auto it = BB.rbegin(); it != BB.rend(); ++it) {
             Instruction &I = *it;
             if (CallInst *CI = dyn_cast<CallInst>(&I)) {
-                if (isa<IntrinsicInst>(CI)) {
-                    // Intrinsics are never GC uses/defs
+                if (isa<IntrinsicInst>(CI) && !isa<MemIntrinsic>(CI)) {
+                    // Intrinsics (other than memcpy/memmove) are never GC uses/defs
                     continue;
                 }
                 MaybeNoteDef(S, BBS, CI, BBS.Safepoints);
